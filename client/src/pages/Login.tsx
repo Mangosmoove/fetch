@@ -2,7 +2,6 @@ import { Button, Card, Col, Form, Row, Stack } from "react-bootstrap";
 import { LoginRequest } from "../utils/type";
 import { useAuthenticateUserInfoMutation } from "../api/api";
 import { useForm } from "react-hook-form";
-import { Layout } from "../components/Layout/Layout";
 
 export const Login = () => {
   const { register, handleSubmit } = useForm<LoginRequest>();
@@ -13,7 +12,6 @@ export const Login = () => {
   };
 
   return (
-    // <Layout>
     <Row className="h-100 justify-content-center align-items-center flex-column">
       <Col xs={4} className="">
         <Card className="p-5" bg="light">
@@ -43,6 +41,5 @@ export const Login = () => {
         </Card>
       </Col>
     </Row>
-    // </Layout>
   );
 };

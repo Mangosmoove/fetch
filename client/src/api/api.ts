@@ -23,6 +23,14 @@ export const api = createApi({
         };
       },
     }),
+    getDogBreeds: build.query<string[], void>({
+      query: () => {
+        const url = "/api/dogs/breeds";
+        return {
+          url,
+        };
+      },
+    }),
   }),
 });
-export const { useAuthenticateUserInfoMutation } = api;
+export const { useAuthenticateUserInfoMutation, useGetDogBreedsQuery } = api;

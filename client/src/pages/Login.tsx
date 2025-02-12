@@ -2,14 +2,25 @@ import { Button, Card, Col, Form, Row, Stack } from "react-bootstrap";
 import { LoginRequest } from "../utils/type";
 import { useAuthenticateUserInfoMutation } from "../api/api";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const { register, handleSubmit } = useForm<LoginRequest>();
   const [authenticateUser] = useAuthenticateUserInfoMutation();
+  const navigate = useNavigate();
 
   const onSubmit = async (formData: LoginRequest) => {
-    await authenticateUser(formData);
+    const authenticated = await authenticateUser(formData);
+
+    if (authenticated.error) {
+      console.log("oh no");
+      // throw some error message in card that says invalid credentials, try again
+    } else {
+      navigate("/overview");
+    }
   };
+
+  // TODO: add form validation
 
   return (
     <Row className="h-100 justify-content-center align-items-center flex-column">

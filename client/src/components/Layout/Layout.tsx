@@ -8,7 +8,7 @@ export const Layout = () => {
   return (
     <Container
       fluid
-      className="vh-100"
+      className="vh-100 px-0"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: "cover",

@@ -22,7 +22,6 @@ app.post("/api/auth/login", async (req, res) => {
       },
       withCredentials: true,
     });
-    console.log(response.data);
 
     const cookies = response.headers["set-cookie"];
     if (cookies) {
@@ -38,7 +37,6 @@ app.post("/api/auth/login", async (req, res) => {
 
 app.get("/api/dogs/breeds", async (req, res) => {
   try {
-    console.log(req.headers);
     if (!req.headers.cookie) {
       return res.status(401).json({ error: "Unauthorized: No cookie found" });
     }

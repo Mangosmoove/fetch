@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+//  zipCodes, ageMin, ageMax, size = 25, from, sort
 export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:8000",
@@ -31,6 +32,26 @@ export const api = createApi({
         };
       },
     }),
+    searchDogs: build.query({
+      query: () => {
+        const params = new URLSearchParams();
+        let breeds = ["Labrador", "Beagle"]; //testing
+
+        if (breeds) {
+          breeds.forEach((breed) => {
+            params.append("breeds", breed); 
+          });
+        }
+
+        return {
+          url: `api/dogs/search?${params.toString()}`,
+        };
+      },
+    }),
   }),
 });
-export const { useAuthenticateUserInfoMutation, useGetDogBreedsQuery } = api;
+export const {
+  useAuthenticateUserInfoMutation,
+  useGetDogBreedsQuery,
+  useLazySearchDogsQuery,
+} = api;

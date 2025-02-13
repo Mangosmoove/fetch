@@ -40,6 +40,7 @@ app.get("/api/dogs/breeds", async (req, res) => {
     if (!req.headers.cookie) {
       return res.status(401).json({ error: "Unauthorized: No cookie found" });
     }
+    let { breeds } = req.query;
 
     const response = await axios.get(`${API_BASE_URL}/dogs/breeds`, {
       headers: {
@@ -53,6 +54,45 @@ app.get("/api/dogs/breeds", async (req, res) => {
   } catch (error) {
     console.error(
       "Error in /api/dogs/breeds:",
+      error.response?.data || error.message
+    );
+    res
+      .status(error.response?.status || 500)
+      .json({ error: "Failed to fetch data" });
+  }
+});
+
+app.get("/api/dogs/search", async (req, res) => {
+  try {
+    if (!req.headers.cookie) {
+      return res.status(401).json({ error: "Unauthorized: No cookie found" });
+    }
+    // console.log(req.query.breeds)
+    let { breeds } = req.query;
+    console.log(breeds);
+    const params = new URLSearchParams();
+    if (breeds) {
+      breeds.forEach((breed) => {
+        params.append("breeds", breed);
+      });
+    }
+
+    const queryString = `breeds=Beagle&Labrador`;
+    const response = await axios.get(
+      `${API_BASE_URL}/dogs/search?${params.toString}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: req.headers.cookie,
+        },
+        withCredentials: true,
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      "Error in /api/dogs/search:",
       error.response?.data || error.message
     );
     res

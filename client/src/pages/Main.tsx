@@ -1,11 +1,25 @@
 import { Row, Col, Form, Card, Button } from "react-bootstrap";
 import { BreedFilter } from "../components/BreedFilter/BreedFilter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLazySearchDogsQuery } from "../api/api";
 
 export const Main = () => {
   const [minAge, setMinAge] = useState<number>(0);
   const [maxAge, setMaxAge] = useState<number>(0);
   const [zipCode, setZipCode] = useState<number>(0);
+
+  const [triggerSearch, { data, isLoading, isError, isSuccess }] =
+    useLazySearchDogsQuery();
+
+  const handleClick = () => {
+    triggerSearch({ breeds: ["Labrador","Airedale"] });
+  };
+
+  useEffect(() => {
+    if (data && !isError && !isLoading && isSuccess) {
+      console.log(data);
+    }
+  }, [data, isError, isSuccess, isLoading]);
 
   return (
     <Card>
@@ -55,7 +69,7 @@ export const Main = () => {
             </Form>
           </Col>
           <Col>
-            <Button>Search</Button>
+            <Button onClick={handleClick}>Search</Button>
           </Col>
         </Row>
       </Card.Body>

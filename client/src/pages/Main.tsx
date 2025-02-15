@@ -1,78 +1,51 @@
-import { Row, Col, Form, Card, Button } from "react-bootstrap";
-import { BreedFilter } from "../components/BreedFilter/BreedFilter";
-import { useEffect, useState } from "react";
-import { useLazySearchDogsQuery } from "../api/api";
+import {useEffect, useState} from "react";
+import {useLazySearchDogsQuery, useSearchDogsQuery, useLazyGetDogDetailsQuery} from "../api/api";
+import {DogCards} from "../components/DogCards/DogCards.tsx";
+import {Dog, DogSearchResponse} from "../utils/type.ts";
 
 export const Main = () => {
-  const [minAge, setMinAge] = useState<number>(0);
-  const [maxAge, setMaxAge] = useState<number>(0);
-  const [zipCode, setZipCode] = useState<number>(0);
+    const {data: defaultSearchData} = useSearchDogsQuery({}) as { data?: DogSearchResponse };
+    const [fetchDogDetails] = useLazyGetDogDetailsQuery();
 
-  const [triggerSearch, { data, isLoading, isError, isSuccess }] =
-    useLazySearchDogsQuery();
+    // const [triggerSearch, {data, isLoading, isError, isSuccess}] =
+    //     useLazySearchDogsQuery();
+    const [dogData, setDogData] = useState<Dog[]>([]);
 
-  const handleClick = () => {
-    triggerSearch({ breeds: ["Labrador","Airedale"] });
-  };
+    // const handleClick = () => {
+    //     triggerSearch({breeds: ["Labrador", "Airedale"]});
+    // };
 
-  useEffect(() => {
-    if (data && !isError && !isLoading && isSuccess) {
-      console.log(data);
-    }
-  }, [data, isError, isSuccess, isLoading]);
+    useEffect(() => {
+        if (!defaultSearchData?.resultIds?.length) {
+            return;
+        }
 
-  return (
-    <Card>
-      <Card.Body>
-        <Row className="align-items-end">
-          <Col xs={4}>
-            <BreedFilter />
-          </Col>
-          <Col xs={2}>
-            <Form>
-              <Form.Group>
-                <Form.Label>Minimum Age</Form.Label>
-                <Form.Control
-                  type="number"
-                  min={0}
-                  max={14}
-                  placeholder="Enter years"
-                  onChange={(e) => setMinAge(Number(e.target.value))}
-                />
-              </Form.Group>
-            </Form>
-          </Col>
-          <Col xs={2}>
-            <Form>
-              <Form.Group>
-                <Form.Label>Maximum Age</Form.Label>
-                <Form.Control
-                  type="number"
-                  min={0}
-                  max={14}
-                  placeholder="Enter years"
-                  onChange={(e) => setMaxAge(Number(e.target.value))}
-                />
-              </Form.Group>
-            </Form>
-          </Col>
-          <Col xs={2}>
-            <Form>
-              <Form.Group>
-                <Form.Label>Zip Code</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Enter Zip Code"
-                  onChange={(e) => setZipCode(Number(e.target.value))}
-                />
-              </Form.Group>
-            </Form>
-          </Col>
-          <Col>
-            <Button onClick={handleClick}>Search</Button>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
-  );
+        (async () => {
+            try {
+                // experimental:
+                // const chunkSize = 100; // because api call does up to 100 ids at a time
+                // let arrDogsObj: Dog[] = [];
+                //
+                // for (let i = 0; i < defaultSearchData.total; i += chunkSize) {
+                //     const chunk = defaultSearchData.resultIds.slice(i, i + chunkSize);
+                //     const response = await fetchDogDetails(chunk).unwrap()
+                //     if (response?.dogs) {
+                //         //concatenate the dog objects returned to the list of dog objects
+                //         arrDogsObj = [...arrDogsObj, ...response.dogs];
+                //     }
+                // }
+                const response = await fetchDogDetails(defaultSearchData.resultIds).unwrap();
+                setDogData(response);
+            } catch (error) {
+                console.log(`something went wrong: ${error}`);
+            }
+        })();
+    }, [defaultSearchData, fetchDogDetails]);
+
+    return (
+        <>
+            <DogCards data={dogData}/>
+        </>
+
+    );
 };

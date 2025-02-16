@@ -97,11 +97,11 @@ export const Main = () => {
             <Row className='pt-3'>
                 <Col xs={12} className='d-flex justify-content-end'>
                     <MatchButton setMatchDetails={setMatchDetails} setMatchBtnPressed={setMatchBtnPressed}/>
-                    <LogoutButton />
+                    <LogoutButton/>
                 </Col>
             </Row>
             <Row className="py-3">
-                <Col xs={3}>
+                <Col xs={12} md={12} lg={6} xl={3}>
                     <FiltersCard handleClick={handleClick}
                                  selectedBreeds={selectedBreeds}
                                  setSelectedBreeds={setSelectedBreeds}
@@ -110,10 +110,10 @@ export const Main = () => {
                                  setZipCodes={setZipCodes}
                     />
                 </Col>
-                <Col xs={9}>
+                <Col xs={12} lg={6} xl={9} className='mt-5 mt-lg-0'>
                     <DogCards data={dogData}/>
                 </Col>
-                <Col xs={12} className='w-100'>
+                <Col xs={12} className='mt-3 d-flex justify-content-center'>
                     <Paginator
                         first={page * pageSize}
                         rows={pageSize}

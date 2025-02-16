@@ -65,9 +65,16 @@ export const api = createApi({
         }),
         getDogDetails: build.query<Dog[], string[]>({
             query: (dogsIds) => ({
-                url: `/api/dogs`,
+                url: "/api/dogs",
                 method: "POST",
                 body: dogsIds
+            })
+        }),
+        getDogMatch: build.query<string[], string[]>({
+            query: (dogIds: string[]) => ({
+                url: "/api/dogs/match",
+                method: "POST",
+                body: dogIds
             })
         })
     }),
@@ -77,5 +84,6 @@ export const {
     useGetDogBreedsQuery,
     useSearchDogsQuery,
     useLazySearchDogsQuery,
-    useLazyGetDogDetailsQuery
+    useLazyGetDogDetailsQuery,
+    useLazyGetDogMatchQuery
 } = api;

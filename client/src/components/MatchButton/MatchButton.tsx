@@ -1,27 +1,31 @@
 import {Button} from "react-bootstrap";
-import {useLazyGetDogDetailsQuery} from "../../api/api.ts";
+import {useLazyGetDogDetailsQuery, useLazyGetDogMatchQuery} from "../../api/api.ts";
+import {useSelector} from "react-redux";
+import {RootState} from "../../redux/store.ts";
+import {Dog} from "../../utils/type.ts";
+import * as React from "react";
 
-export const MatchButton = () => {
+interface MatchButtonProps {
+    setMatchDetails:  React.Dispatch<React.SetStateAction<Dog[]>>;
+}
+
+export const MatchButton = ({setMatchDetails}: MatchButtonProps) => {
     const [fetchDogDetails] = useLazyGetDogDetailsQuery();
-    // TODO: in parent component, pass: setDogDetails
+    const [fetchMatch] = useLazyGetDogMatchQuery();
+    const favorites = useSelector((state: RootState) => state.favorites.ids);
 
     const handleClick = async () => {
-        // TODO: call match api
-        //         if (!slice.matches.length) {
-        //             return some text like add some favorites first;
-        //         }
-        //             try {
-        //                 const matchResponse = await fetchDogMatch(slice.ids);
-        //                 setDogId(response);
-        //                 const dogDetailsResponse = await fetchDogDetails(single_id);
-        //                  setDogDetails(dogDetailsResponse)
-        //            } catch (error) {
-        //                 console.log(`something went wrong: ${error}`);
-        //            }
-
-        return;
+        try {
+            const matchResponse = await fetchMatch(favorites).unwrap();
+            const dogDetailsResponse = await fetchDogDetails(matchResponse).unwrap();
+            // TODO: convert string to str []
+            setMatchDetails(dogDetailsResponse);
+        } catch (error) {
+            console.log(`something went wrong: ${error}`);
+        }
     }
+
     return (
-        <Button variant='warning' onClick={handleClick}>Find my match!</Button>
+        <Button variant='warning' disabled={!favorites.length} onClick={handleClick}>Find my match!</Button>
     )
 }

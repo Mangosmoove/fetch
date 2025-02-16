@@ -1,6 +1,9 @@
 import {Button, Card, Form, Stack} from "react-bootstrap"
 import {BreedFilter} from "../BreedFilter/BreedFilter.tsx";
 import * as React from "react";
+import {useDispatch, useSelector} from "react-redux";
+import {setSort} from "../../redux/slices/filter.slice.ts";
+import {RootState} from "../../redux/store.ts";
 
 interface FiltersCardProps {
     handleClick: () => void;
@@ -8,8 +11,7 @@ interface FiltersCardProps {
     setSelectedBreeds: React.Dispatch<React.SetStateAction<string[]>>;
     setAgeMin: React.Dispatch<React.SetStateAction<string>>;
     setAgeMax: React.Dispatch<React.SetStateAction<string>>;
-    setZipCode: React.Dispatch<React.SetStateAction<string[]>>;
-    setSort: React.Dispatch<React.SetStateAction<string>>;
+    setZipCodes: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const FiltersCard = ({
@@ -18,15 +20,13 @@ export const FiltersCard = ({
                                 setSelectedBreeds,
                                 setAgeMin,
                                 setAgeMax,
-                                setZipCode,
-                                setSort
+                                setZipCodes,
                             }: FiltersCardProps) => {
-    const [btnFill, setBtnFill] = React.useState<string>(""); //TODO: this will default to what's in redux
+    const dispatch = useDispatch();
+    const sort = useSelector((state: RootState) => state.filter.sort)
 
     const handleSortClick = (sortBy: string) => {
-        // TODO: ah we're gonna have to move this to redux bc it'll call the search query
-        setSort(sortBy);
-        setBtnFill(sortBy);
+        dispatch(setSort(`${sortBy}:asc`))
     }
     return (
         <Card>
@@ -64,7 +64,7 @@ export const FiltersCard = ({
                             <Form.Control
                                 type="text"
                                 placeholder="Enter Zip Code"
-                                // onChange={(e) => setZipCode(e.target.value)}
+                                // onChange={(e) => setZipCodes(e.target.value)}
                             />
                         </Form.Group>
                     </Form>
@@ -72,11 +72,11 @@ export const FiltersCard = ({
                 </Stack>
                 <h5 className='mt-3'>Sort By</h5>
                 <Stack gap={3} direction={'horizontal'}>
-                    <Button variant={btnFill === 'age' ? "primary" : "outline-primary"}
+                    <Button variant={sort === 'age:asc' || sort === 'age:desc' ? "primary" : "outline-primary"}
                             onClick={() => handleSortClick('age')}>Age</Button>
-                    <Button variant={btnFill === 'breed' ? "primary" : "outline-primary"}
+                    <Button variant={sort === 'breed:asc' || sort === 'breed.desc' ? "primary" : "outline-primary"}
                             onClick={() => handleSortClick('breed')}>Breed</Button>
-                    <Button variant={btnFill === 'name' ? "primary" : "outline-primary"}
+                    <Button variant={sort === 'name:asc' || sort === 'name:desc' ? "primary" : "outline-primary"}
                             onClick={() => handleSortClick('name')}>Name</Button>
                 </Stack>
             </Card.Body>

@@ -9,7 +9,6 @@ interface BreedFilterProps {
 
 export const BreedFilter = ({selectedBreeds, setSelectedBreeds}: BreedFilterProps) => {
   const { data: breeds, isLoading } = useGetDogBreedsQuery();
-  console.log(selectedBreeds)
   return (
     <MultiSelect
       filter

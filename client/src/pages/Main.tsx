@@ -4,21 +4,31 @@ import {DogCards} from "../components/DogCards/DogCards.tsx";
 import {Dog, DogSearchResponse} from "../utils/type.ts";
 import {FiltersCard} from "../components/FiltersCard/FiltersCard.tsx";
 import {Col, Row} from "react-bootstrap";
+import {setFilters} from "../redux/slices/filter.slice.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {RootState} from "../redux/store.ts";
+import {MatchButton} from "../components/MatchButton/MatchButton.tsx";
+import {MatchedDogModal} from "../components/MatchedDogModal/MatchedDogModal.tsx";
 
 export const Main = () => {
     const [selectedBreeds, setSelectedBreeds] = useState<string[]>([])
     const [ageMin, setAgeMin] = useState<string>("");
     const [ageMax, setAgeMax] = useState<string>("");
-    const [zipCode, setZipCode] = useState<string[]>([]);
-    const [sort, setSort] = useState<string>("breed:asc");
+    const [zipCodes, setZipCodes] = useState<string[]>([]);
+    const [dogData, setDogData] = useState<Dog[]>([]);
+    const sort = useSelector((state: RootState) => state.filter.sort)
 
+    const [matchDetails, setMatchDetails] = useState<Dog[]>([]);
+
+    // TODO: figure out why sort is an empty string when filters cleared
     const {data: defaultSearchData} = useSearchDogsQuery({sort: sort}) as { data?: DogSearchResponse };
     const [fetchDogDetails] = useLazyGetDogDetailsQuery();
     const [triggerSearch, {data: filteredData}] = useLazySearchDogsQuery();
-    const [dogData, setDogData] = useState<Dog[]>([]);
+    const dispatch = useDispatch();
 
     const handleClick = () => {
-        triggerSearch({breeds: selectedBreeds, ageMin: ageMin, ageMax: ageMax, zipCodes: zipCode});
+        dispatch(setFilters({selectedBreeds: selectedBreeds, ageMin: ageMin, ageMax: ageMax, zipCode: zipCodes}));
+        triggerSearch({breeds: selectedBreeds, ageMin: ageMin, ageMax: ageMax, zipCodes: zipCodes, sort: sort});
     };
 
     useEffect(() => {
@@ -52,20 +62,25 @@ export const Main = () => {
 
     return (
         <>
+            <Row>
+                <Col xs={12} className='d-flex justify-content-end'>
+                    <MatchButton setMatchDetails={setMatchDetails} />
+                </Col>
+            </Row>
             <Row className="py-3">
                 <Col xs={3}>
                     <FiltersCard handleClick={handleClick} selectedBreeds={selectedBreeds}
                                  setSelectedBreeds={setSelectedBreeds}
                                  setAgeMin={setAgeMin}
                                  setAgeMax={setAgeMax}
-                                 setZipCode={setZipCode}
-                                 setSort={setSort}
+                                 setZipCodes={setZipCodes}
                     />
                 </Col>
                 <Col>
                     <DogCards data={dogData}/>
                 </Col>
             </Row>
+            <MatchedDogModal matchedDog={matchDetails} />
         </>
     );
 };

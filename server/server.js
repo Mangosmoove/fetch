@@ -69,7 +69,7 @@ app.get("/api/dogs/search", async (req, res) => {
         }
         let {breeds, zipCodes, ageMin, ageMax, size, from, sort} = req.query;
         const params = new URLSearchParams();
-        console.log(typeof(breeds))
+
         if (breeds) {
             breeds.forEach((breed) => {
                 params.append("breeds", breed);
@@ -150,6 +150,36 @@ app.post("/api/dogs/", async (req, res) => {
     }
 })
 
+app.post("/api/dogs/match", async (req, res) => {
+    try {
+        if (!req.headers.cookie) {
+            return res.status(401).json({error: "Unauthorized: No cookie found"});
+        }
+        const ids = req.body;
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({error: "Invalid request body, expected an array of dog IDs"});
+        }
+
+        const response = await axios.post(`${API_BASE_URL}/dogs/match`, ids, {
+            headers: {
+                "Content-Type": "application/json",
+                Cookie: req.headers.cookie,
+            },
+            withCredentials: true,
+        });
+
+        res.json(response.data);
+
+    } catch (error) {
+        console.error(
+            "Error in /api/dogs/match:",
+            error.response?.data || error.message
+        );
+        res
+            .status(error.response?.status || 500)
+            .json({error: "Failed to fetch data"});
+    }
+})
 
 app.listen(PORT, () =>
     console.log(`Proxy server running on http://localhost:${PORT}`)

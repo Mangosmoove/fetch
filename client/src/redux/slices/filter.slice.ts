@@ -23,7 +23,10 @@ export const filterSlice = createSlice({
     initialState,
     reducers: {
         setFilters: (state, action: PayloadAction<Partial<FilterState>>) => {
-            return { ...state, ...action.payload };
+            return {...state, ...action.payload};
+        },
+        resetFilters: () => {
+            return {...initialState};
         },
         setSort: (state, action: PayloadAction<string>) => {
             state.sort = action.payload;
@@ -34,5 +37,5 @@ export const filterSlice = createSlice({
     }
 })
 
-export const {setFilters, setSort, toggleSortDirection} = filterSlice.actions;
+export const {setFilters, resetFilters, setSort, toggleSortDirection} = filterSlice.actions;
 export default filterSlice.reducer;

@@ -44,10 +44,15 @@ app.post("/api/auth/logout", async (req, res) => {
             withCredentials: true,
         });
 
-        // Clear auth cookies on the client
-        // res.setHeader("Set-Cookie", "fetch_access_token=; Path=/; HttpOnly; Secure; Max-Age=0");
+        // res.cookie('cookie', '', {
+        //     maxAge: 0,
+        //     httpOnly: true,
+        //     secure: true,
+        //     sameSite: 'strict',
+        //     path: '/'
+        // });
 
-        res.json({ message: "Logout successful" });
+        res.json({ status: 200, message: "Logout successful" });
     } catch (error) {
         console.error("Logout error:", error.response?.data || error.message);
         res.status(error.response?.status || 500).json({ error: "Logout failed" });

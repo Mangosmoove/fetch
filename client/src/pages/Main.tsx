@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useLazySearchDogsQuery, useSearchDogsQuery, useLazyGetDogDetailsQuery} from "../api/api";
 import {DogCards} from "../components/DogCards/DogCards.tsx";
 import {Dog, DogSearchResponse} from "../utils/type.ts";
@@ -42,9 +42,9 @@ export const Main = () => {
     const [fetchDogDetails] = useLazyGetDogDetailsQuery();
     const [triggerSearch, {data: filteredData}] = useLazySearchDogsQuery();
     const dispatch = useDispatch();
+    const hasFetchedDefaultData = useRef(false);
 
     const handleClick = () => {
-        console.log('here')
         setSubmitClicked(true);
         dispatch(setFilters({selectedBreeds: selectedBreeds, ageMin: ageMin, ageMax: ageMax, zipCode: zipCodes}));
         triggerSearch({
@@ -60,7 +60,7 @@ export const Main = () => {
 
     // sets the data shown to users by default
     useEffect(() => {
-        if (!defaultSearchData?.resultIds?.length) {
+        if (!defaultSearchData || !defaultSearchData?.resultIds?.length || hasFetchedDefaultData.current) {
             return;
         }
 
@@ -68,17 +68,17 @@ export const Main = () => {
             try {
                 setTotalDogs(defaultSearchData.total)
                 const response = await fetchDogDetails(defaultSearchData.resultIds).unwrap();
-
                 setDogData(response);
+                hasFetchedDefaultData.current = true;
             } catch (error) {
                 console.log(`something went wrong: ${error}`);
             }
         })();
-    }, [defaultSearchData, fetchDogDetails]);
+    }, [defaultSearchData, fetchDogDetails, hasFetchedDefaultData]);
 
     // sets filtered data
     useEffect(() => {
-        if (!filteredData || !submitClicked) {
+        if (!filteredData && !submitClicked) {
             return;
         }
         (async () => {

@@ -6,10 +6,11 @@ import {Dog} from "../../utils/type.ts";
 import * as React from "react";
 
 interface MatchButtonProps {
-    setMatchDetails:  React.Dispatch<React.SetStateAction<Dog[]>>;
+    setMatchDetails: React.Dispatch<React.SetStateAction<Dog[]>>;
+    setMatchBtnPressed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const MatchButton = ({setMatchDetails}: MatchButtonProps) => {
+export const MatchButton = ({setMatchDetails, setMatchBtnPressed}: MatchButtonProps) => {
     const [fetchDogDetails] = useLazyGetDogDetailsQuery();
     const [fetchMatch] = useLazyGetDogMatchQuery();
     const favorites = useSelector((state: RootState) => state.favorites.ids);
@@ -17,15 +18,17 @@ export const MatchButton = ({setMatchDetails}: MatchButtonProps) => {
     const handleClick = async () => {
         try {
             const matchResponse = await fetchMatch(favorites).unwrap();
-            const dogDetailsResponse = await fetchDogDetails(matchResponse).unwrap();
-            // TODO: convert string to str []
+            const dogDetailsResponse = await fetchDogDetails([matchResponse.match]).unwrap();
             setMatchDetails(dogDetailsResponse);
+            setMatchBtnPressed(true)
         } catch (error) {
             console.log(`something went wrong: ${error}`);
         }
     }
 
     return (
-        <Button variant='warning' disabled={!favorites.length} onClick={handleClick}>Find my match!</Button>
+        <Button variant='warning' className='p-3 fw-bold' disabled={!favorites.length} onClick={handleClick}>
+            Show my match!
+        </Button>
     )
 }

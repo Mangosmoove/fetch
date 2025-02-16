@@ -25,6 +25,12 @@ export const api = createApi({
                 };
             },
         }),
+        logoutUser: build.mutation({
+            query: () => ({
+                url: "api/auth/logout",
+                method: "POST",
+            }),
+        }),
         getDogBreeds: build.query<string[], void>({
             query: () => {
                 const url = "/api/dogs/breeds";
@@ -34,7 +40,13 @@ export const api = createApi({
             },
         }),
         searchDogs: build.query({
-            query: ({breeds, zipCodes, ageMin, ageMax, size, from, sort}: SearchQueryParams) => {
+            query: ({breeds, zipCodes, ageMin, ageMax, size, from, sort, next}: SearchQueryParams) => {
+                if (next) {
+                    return {
+                        url: next
+                    };
+                }
+
                 const params = new URLSearchParams();
                 if (breeds) {
                     breeds.forEach((breed) => params.append("breeds", breed));
@@ -52,12 +64,11 @@ export const api = createApi({
                     params.append("size", size.toString());
                 }
                 if (from) {
-                    params.append("from", from);
+                    params.append("from", from.toString());
                 }
                 if (sort) {
                     params.append("sort", sort);
                 }
-                console.log(params.toString())
                 return {
                     url: `api/dogs/search?${params.toString()}`,
                 };
@@ -70,7 +81,7 @@ export const api = createApi({
                 body: dogsIds
             })
         }),
-        getDogMatch: build.query<string[], string[]>({
+        getDogMatch: build.query<{ match: string }, string[]>({
             query: (dogIds: string[]) => ({
                 url: "/api/dogs/match",
                 method: "POST",
@@ -81,6 +92,7 @@ export const api = createApi({
 });
 export const {
     useAuthenticateUserInfoMutation,
+    useLogoutUserMutation,
     useGetDogBreedsQuery,
     useSearchDogsQuery,
     useLazySearchDogsQuery,

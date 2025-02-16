@@ -6,9 +6,10 @@ import {RootState} from "../../redux/store.ts";
 
 interface DogProps {
     data: Dog[];
+    isMatchedModal?: boolean;
 }
 
-export const DogCards = ({data}: DogProps) => {
+export const DogCards = ({data, isMatchedModal}: DogProps) => {
     const dispatch = useDispatch();
     const favorites = useSelector((state: RootState) => state.favorites.ids);
 
@@ -17,18 +18,20 @@ export const DogCards = ({data}: DogProps) => {
     }
 
     return (
-        <Row className="gy-4">
+        <Row className={`gy-4 ${isMatchedModal && "justify-content-center"}`}>
             {data.map((dog: Dog) => (
-                <Col key={dog.id} xs={12} sm={6} md={4} lg={4}>
-                    <Card style={{minHeight: "300px"}}>
-                        <Row className='my-2'>
-                            <Col className='d-flex justify-content-end align-items-center'>
-                                <h5 className='mb-0'>Favorite</h5>
-                                <i className={`mx-2 bi fs-3 ${favorites.includes(dog.id) ? 'bi-star-fill' : 'bi-star'}`}
-                                   onClick={() => handleClick(dog.id)}></i>
-                            </Col>
-                        </Row>
-
+                <Col key={dog.id} xs={12} sm={6} md={4} lg={isMatchedModal ? 8 : 4}>
+                    <Card style={{height: "400px"}}>
+                        {!isMatchedModal && (
+                            <Row className='my-2'>
+                                <Col className='d-flex justify-content-end align-items-center'>
+                                    <h5 className='mb-0'>Favorite</h5>
+                                    <i className={`mx-2 bi fs-3 ${favorites.includes(dog.id) ? 'bi-star-fill' : 'bi-star'}`}
+                                       onClick={() => handleClick(dog.id)}></i>
+                                </Col>
+                            </Row>
+                        )
+                        }
                         <Card.Img variant="top" src={dog.img} alt={`Image of ${dog.name}`}
                                   style={{height: "200px", objectFit: "cover"}}/>
                         <Card.Body>

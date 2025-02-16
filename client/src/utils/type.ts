@@ -29,6 +29,7 @@ export interface SearchQueryParams {
   ageMin?: string;
   ageMax?: string;
   size?: number;
-  from?: string;
+  from?: number;
   sort?: string;
+  next?: string;
 }

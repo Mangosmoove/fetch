@@ -6,6 +6,7 @@ interface FilterState {
     ageMax: string;
     zipCode: string[];
     sort: string;
+    sortDirection: string;
 }
 
 const initialState: FilterState = {
@@ -13,7 +14,8 @@ const initialState: FilterState = {
     ageMin: '',
     ageMax: '',
     zipCode: [],
-    sort: "breed:asc"
+    sort: "breed",
+    sortDirection: "asc"
 }
 
 export const filterSlice = createSlice({
@@ -25,9 +27,12 @@ export const filterSlice = createSlice({
         },
         setSort: (state, action: PayloadAction<string>) => {
             state.sort = action.payload;
+        },
+        toggleSortDirection: (state) => {
+            state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc'
         }
     }
 })
 
-export const {setFilters, setSort} = filterSlice.actions;
+export const {setFilters, setSort, toggleSortDirection} = filterSlice.actions;
 export default filterSlice.reducer;

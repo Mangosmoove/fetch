@@ -35,6 +35,25 @@ app.post("/api/auth/login", async (req, res) => {
     }
 });
 
+app.post("/api/auth/logout", async (req, res) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            withCredentials: true,
+        });
+
+        // Clear auth cookies on the client
+        // res.setHeader("Set-Cookie", "fetch_access_token=; Path=/; HttpOnly; Secure; Max-Age=0");
+
+        res.json({ message: "Logout successful" });
+    } catch (error) {
+        console.error("Logout error:", error.response?.data || error.message);
+        res.status(error.response?.status || 500).json({ error: "Logout failed" });
+    }
+});
+
 app.get("/api/dogs/breeds", async (req, res) => {
     try {
         if (!req.headers.cookie) {
@@ -71,6 +90,9 @@ app.get("/api/dogs/search", async (req, res) => {
         const params = new URLSearchParams();
 
         if (breeds) {
+            if (typeof(breeds) === "string") {
+                breeds = [breeds]
+            }
             breeds.forEach((breed) => {
                 params.append("breeds", breed);
             });
@@ -180,6 +202,7 @@ app.post("/api/dogs/match", async (req, res) => {
             .json({error: "Failed to fetch data"});
     }
 })
+
 
 app.listen(PORT, () =>
     console.log(`Proxy server running on http://localhost:${PORT}`)

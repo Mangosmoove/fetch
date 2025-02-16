@@ -67,16 +67,35 @@ app.get("/api/dogs/search", async (req, res) => {
         if (!req.headers.cookie) {
             return res.status(401).json({error: "Unauthorized: No cookie found"});
         }
-        let {breeds} = req.query;
+        let {breeds, zipCodes, ageMin, ageMax, size, from, sort} = req.query;
         const params = new URLSearchParams();
+        console.log(typeof(breeds))
         if (breeds) {
             breeds.forEach((breed) => {
                 params.append("breeds", breed);
             });
         }
+        if (zipCodes) {
+            zipCodes.forEach((zipCode) => params.append("zipCodes", zipCode));
+        }
+        if (ageMin !== undefined) {
+            params.append("ageMin", ageMin);
+        }
+        if (ageMax !== undefined) {
+            params.append("ageMax", ageMax);
+        }
+        if (size !== undefined) {
+            params.append("size", size.toString());
+        }
+        if (from) {
+            params.append("from", from);
+        }
+        if (sort) {
+            params.append("sort", sort);
+        }
 
         const response = await axios.get(
-            `${API_BASE_URL}/dogs/search?${params.toString}`,
+            `${API_BASE_URL}/dogs/search?${params.toString()}`,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -105,9 +124,9 @@ app.post("/api/dogs/", async (req, res) => {
         }
 
         // const ids = req.body;
-        const ids=req.body;
-        if (!ids|| !Array.isArray(ids) || ids.length === 0) {
-            return res.status(400).json({ error: "Invalid request body, expected an array of dog IDs" });
+        const ids = req.body;
+        if (!ids || !Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({error: "Invalid request body, expected an array of dog IDs"});
         }
 
         const response = await axios.post(`${API_BASE_URL}/dogs`, ids, {

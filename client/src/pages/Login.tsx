@@ -25,7 +25,7 @@ export const Login = () => {
     };
 
     return (
-        <Row className="h-100 justify-content-center align-items-center flex-column">
+        <Row className="vh-100 justify-content-center align-items-center">
             <Col xs={4}>
                 <Card className="p-5" bg="light">
                     <Form className="w-100" onSubmit={handleSubmit(onSubmit)}>

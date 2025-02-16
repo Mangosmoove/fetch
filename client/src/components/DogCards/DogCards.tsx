@@ -7,7 +7,7 @@ interface DogProps {
 
 export const DogCards = ({data}: DogProps) => {
     return (
-        <Row className="g-4">
+        <Row className="gy-4 mx-3">
             {data.map((dog: Dog) => (
                 <Col key={dog.id} xs={12} sm={6} md={4} lg={4}>
                     <Card style={{minHeight: "300px"}}>

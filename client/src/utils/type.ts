@@ -22,3 +22,13 @@ export interface DogSearchResponse {
   next?: string;
   prev?: string;
 }
+
+export interface SearchQueryParams {
+  breeds?: string[];
+  zipCodes?: string[];
+  ageMin?: string;
+  ageMax?: string;
+  size?: number;
+  from?: string;
+  sort?: string;
+}

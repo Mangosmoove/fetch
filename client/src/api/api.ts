@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
-import {Dog, LoginRequest} from "../utils/type.ts";
+import {Dog, LoginRequest, SearchQueryParams} from "../utils/type.ts";
 
 //  zipCodes, ageMin, ageMax, size = 25, from, sort
 export const api = createApi({
@@ -34,8 +34,30 @@ export const api = createApi({
             },
         }),
         searchDogs: build.query({
-            query: () => {
+            query: ({breeds, zipCodes, ageMin, ageMax, size, from, sort}: SearchQueryParams) => {
                 const params = new URLSearchParams();
+                if (breeds) {
+                    breeds.forEach((breed) => params.append("breeds", breed));
+                }
+                if (zipCodes) {
+                    zipCodes.forEach((zipCode) => params.append("zipCodes", zipCode));
+                }
+                if (ageMin) {
+                    params.append("ageMin", ageMin);
+                }
+                if (ageMax) {
+                    params.append("ageMax", ageMax);
+                }
+                if (size) {
+                    params.append("size", size.toString());
+                }
+                if (from) {
+                    params.append("from", from);
+                }
+                if (sort) {
+                    params.append("sort", sort);
+                }
+                console.log(params.toString())
                 return {
                     url: `api/dogs/search?${params.toString()}`,
                 };
@@ -55,6 +77,5 @@ export const {
     useGetDogBreedsQuery,
     useSearchDogsQuery,
     useLazySearchDogsQuery,
-    useGetDogDetailsQuery,
     useLazyGetDogDetailsQuery
 } = api;

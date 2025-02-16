@@ -20,7 +20,8 @@ export const DogCards = ({data, isMatchedModal}: DogProps) => {
     return (
         <Row className={`gy-4 ${isMatchedModal && "justify-content-center"}`}>
             {data.map((dog: Dog) => (
-                <Col key={dog.id} xs={12} sm={6} md={4} lg={isMatchedModal ? 8 : 12} xl={4}>
+                <Col key={dog.id} xs={isMatchedModal ? 9 : 12} sm={isMatchedModal ? 8 : 6} md={isMatchedModal ? 8 : 4}
+                     lg={isMatchedModal ? 8 : 12} xl={isMatchedModal ? 8 : 4}>
                     <Card style={{height: "400px"}}>
                         {!isMatchedModal && (
                             <Row className='my-2'>

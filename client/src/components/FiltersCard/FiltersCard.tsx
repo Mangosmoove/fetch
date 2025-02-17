@@ -55,9 +55,13 @@ export const FiltersCard = ({
                                 min={0}
                                 max={14}
                                 placeholder="Enter years"
-                                value={ageMin}
+                                defaultValue={ageMin}
+                                isInvalid={isNaN(Number(ageMin)) || Number(ageMin) < 0 || Number(ageMin) > 14}
                                 onChange={(e) => setAgeMin(e.target.value)}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                Please enter a valid number between 0 and 14.
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Form>
                     <Form>
@@ -68,9 +72,13 @@ export const FiltersCard = ({
                                 min={0}
                                 max={14}
                                 placeholder="Enter years"
-                                value={ageMax}
+                                defaultValue={ageMax}
+                                isInvalid={isNaN(Number(ageMax)) || Number(ageMax) < 0 || Number(ageMax) > 14}
                                 onChange={(e) => setAgeMax(e.target.value)}
                             />
+                            <Form.Control.Feedback type="invalid">
+                                Please enter a valid number between 0 and 14.
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Form>
                     <Chips

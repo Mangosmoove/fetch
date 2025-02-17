@@ -22,6 +22,7 @@ export const Login = () => {
         <Row className="vh-100 justify-content-center align-items-center">
             <Col xs={10} sm={8} lg={6} xl={4}>
                 <Card className="p-5" bg="light">
+                    <h5 className='text-center'>Login to find your dog buddy!</h5>
                     <Form className="w-100" onSubmit={handleSubmit(onSubmit)}>
                         <Stack gap={3}>
                             <Form.Group controlId="formName">

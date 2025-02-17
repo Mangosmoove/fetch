@@ -37,25 +37,30 @@ app.post("/api/auth/login", async (req, res) => {
 
 app.post("/api/auth/logout", async (req, res) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
-            headers: {
-                "Content-Type": "application/json",
-            },
-            withCredentials: true,
+        // const response = await axios.post(`${API_BASE_URL}/auth/logout`, {}, {
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     withCredentials: true,
+        // });
+        //
+        // const cookies = response.headers["set-cookie"];
+        // if (cookies) {
+        //     res.setHeader("set-cookie", cookies);
+        // }
+
+        res.cookie('cookie', '', {
+            maxAge: 0,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            path: '/'
         });
 
-        // res.cookie('cookie', '', {
-        //     maxAge: 0,
-        //     httpOnly: true,
-        //     secure: true,
-        //     sameSite: 'strict',
-        //     path: '/'
-        // });
-
-        res.json({ status: 200, message: "Logout successful" });
+        res.json({status: 200, message: "Logout successful"});
     } catch (error) {
         console.error("Logout error:", error.response?.data || error.message);
-        res.status(error.response?.status || 500).json({ error: "Logout failed" });
+        res.status(error.response?.status || 500).json({error: "Logout failed"});
     }
 });
 
@@ -95,7 +100,7 @@ app.get("/api/dogs/search", async (req, res) => {
         const params = new URLSearchParams();
 
         if (breeds) {
-            if (typeof(breeds) === "string") {
+            if (typeof (breeds) === "string") {
                 breeds = [breeds]
             }
             breeds.forEach((breed) => {
@@ -103,7 +108,7 @@ app.get("/api/dogs/search", async (req, res) => {
             });
         }
         if (zipCodes) {
-            if (typeof(zipCodes) === "string") {
+            if (typeof (zipCodes) === "string") {
                 zipCodes = [zipCodes]
             }
             zipCodes.forEach((zipCode) => params.append("zipCodes", zipCode));

@@ -103,6 +103,9 @@ app.get("/api/dogs/search", async (req, res) => {
             });
         }
         if (zipCodes) {
+            if (typeof(zipCodes) === "string") {
+                zipCodes = [zipCodes]
+            }
             zipCodes.forEach((zipCode) => params.append("zipCodes", zipCode));
         }
         if (ageMin !== undefined) {

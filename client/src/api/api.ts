@@ -40,13 +40,7 @@ export const api = createApi({
             },
         }),
         searchDogs: build.query({
-            query: ({breeds, zipCodes, ageMin, ageMax, size, from, sort, next}: SearchQueryParams) => {
-                if (next) {
-                    return {
-                        url: next
-                    };
-                }
-
+            query: ({breeds, zipCodes, ageMin, ageMax, size, from, sort}: SearchQueryParams) => {
                 const params = new URLSearchParams();
                 if (breeds) {
                     breeds.forEach((breed) => params.append("breeds", breed));
@@ -96,6 +90,7 @@ export const {
     useGetDogBreedsQuery,
     useSearchDogsQuery,
     useLazySearchDogsQuery,
+    useGetDogDetailsQuery,
     useLazyGetDogDetailsQuery,
     useLazyGetDogMatchQuery
 } = api;

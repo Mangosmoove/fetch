@@ -33,9 +33,12 @@ export const filterSlice = createSlice({
         },
         toggleSortDirection: (state) => {
             state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc'
+        },
+        resetSortDirection: (state) => {
+            state.sortDirection = 'asc'
         }
     }
 })
 
-export const {setFilters, resetFilters, setSort, toggleSortDirection} = filterSlice.actions;
+export const {setFilters, resetFilters, setSort, toggleSortDirection, resetSortDirection} = filterSlice.actions;
 export default filterSlice.reducer;

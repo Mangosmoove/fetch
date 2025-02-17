@@ -4,13 +4,14 @@ import {DogCards} from "../components/DogCards/DogCards.tsx";
 import {Dog, DogSearchResponse} from "../utils/type.ts";
 import {FiltersCard} from "../components/FiltersCard/FiltersCard.tsx";
 import {Col, Row} from "react-bootstrap";
-import {setFilters} from "../redux/slices/filter.slice.ts";
+import {resetFilters, resetSortDirection, setFilters, setSort} from "../redux/slices/filter.slice.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../redux/store.ts";
 import {MatchButton} from "../components/MatchButton/MatchButton.tsx";
 import {MatchedDogModal} from "../components/MatchedDogModal/MatchedDogModal.tsx";
 import {Paginator} from "primereact/paginator";
 import {LogoutButton} from "../components/LogoutButton/LogoutButton.tsx";
+import {FavoriteDogsCard} from "../components/FavoriteDogsCard/FavoriteDogsCard.tsx";
 
 export const Main = () => {
     const [selectedBreeds, setSelectedBreeds] = useState<string[]>([])
@@ -21,8 +22,8 @@ export const Main = () => {
     const sort = useSelector((state: RootState) => state.filter.sort)
     const sortDirection = useSelector((state: RootState) => state.filter.sortDirection)
 
-    // for determinng when to run filter search - isn't working tho
-    const [submitClicked, setSubmitClicked] = useState<boolean>(false);
+    //for clearing out filters and rerunning search
+    const [filtersCleared, setFiltersCleared] = useState(false);
 
     // for modal
     const [matchBtnPressed, setMatchBtnPressed] = useState<boolean>(false)
@@ -30,10 +31,10 @@ export const Main = () => {
 
     // for pagination
     const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(25);
+    const pageSize = 25;
     const [totalDogs, setTotalDogs] = useState<number>(0);
 
-    // TODO: figure out why sort is an empty string when filters cleared
+
     const {data: defaultSearchData} = useSearchDogsQuery({
         sort: `${sort}:${sortDirection}`,
         size: pageSize,
@@ -45,7 +46,6 @@ export const Main = () => {
     const hasFetchedDefaultData = useRef(false);
 
     const handleClick = () => {
-        setSubmitClicked(true);
         dispatch(setFilters({selectedBreeds: selectedBreeds, ageMin: ageMin, ageMax: ageMax, zipCode: zipCodes}));
         triggerSearch({
             breeds: selectedBreeds,
@@ -57,6 +57,38 @@ export const Main = () => {
             from: page * pageSize
         });
     };
+
+    const handleClearClick = () => {
+        dispatch(resetFilters());
+        dispatch(resetSortDirection());
+        dispatch(setSort('breed'));
+
+        // so form data will be reset
+        setAgeMin('');
+        setAgeMax('');
+        setZipCodes([]);
+        setSelectedBreeds([]);
+
+        // Set the state to indicate filters are cleared
+        setFiltersCleared(true);
+    };
+
+// Trigger search only when filtersCleared is true
+    useEffect(() => {
+        if (filtersCleared) {
+            triggerSearch({
+                breeds: [],
+                ageMin: '',
+                ageMax: '',
+                zipCodes: [],
+                sort: `${sort}:${sortDirection}`,
+                size: pageSize,
+                from: page * pageSize
+            });
+            setFiltersCleared(false);
+        }
+    }, [filtersCleared, page, sort, sortDirection, triggerSearch]);
+
 
     // sets the data shown to users by default
     useEffect(() => {
@@ -71,14 +103,14 @@ export const Main = () => {
                 setDogData(response);
                 hasFetchedDefaultData.current = true;
             } catch (error) {
-                console.log(`something went wrong: ${error}`);
+                console.log(`something went wrong fetching default dogs: ${error}`);
             }
         })();
     }, [defaultSearchData, fetchDogDetails, hasFetchedDefaultData]);
 
     // sets filtered data
     useEffect(() => {
-        if (!filteredData && !submitClicked) {
+        if (!filteredData) {
             return;
         }
         (async () => {
@@ -87,7 +119,7 @@ export const Main = () => {
                 const response = await fetchDogDetails(filteredData.resultIds).unwrap();
                 setDogData(response);
             } catch (error) {
-                console.log(`something went wrong: ${error}`);
+                console.log(`something went wrong with fetching filtered dogs: ${error}`);
             }
         })();
     }, [fetchDogDetails, filteredData]);
@@ -102,13 +134,17 @@ export const Main = () => {
             </Row>
             <Row className="py-3">
                 <Col xs={12} md={12} lg={6} xl={3}>
-                    <FiltersCard handleClick={handleClick}
-                                 selectedBreeds={selectedBreeds}
-                                 setSelectedBreeds={setSelectedBreeds}
-                                 setAgeMin={setAgeMin}
-                                 setAgeMax={setAgeMax}
-                                 setZipCodes={setZipCodes}
+                    <FiltersCard
+                        handleClick={handleClick}
+                        handleClearClick={handleClearClick}
+                        selectedBreeds={selectedBreeds}
+                        zipCodes={zipCodes}
+                        setSelectedBreeds={setSelectedBreeds}
+                        setAgeMin={setAgeMin}
+                        setAgeMax={setAgeMax}
+                        setZipCodes={setZipCodes}
                     />
+                    <FavoriteDogsCard/>
                 </Col>
                 <Col xs={12} lg={6} xl={9} className='mt-5 mt-lg-0'>
                     <DogCards data={dogData}/>
@@ -118,7 +154,18 @@ export const Main = () => {
                         first={page * pageSize}
                         rows={pageSize}
                         totalRecords={totalDogs || 0}
-                        onPageChange={(e) => setPage(e.page)}
+                        onPageChange={(e) => {
+                            setPage(e.page);
+                            triggerSearch({
+                                breeds: selectedBreeds,
+                                ageMin: ageMin,
+                                ageMax: ageMax,
+                                zipCodes: zipCodes,
+                                sort: `${sort}:${sortDirection}`,
+                                size: pageSize,
+                                from: e.page * pageSize,
+                            });
+                        }}
                     />
                 </Col>
             </Row>

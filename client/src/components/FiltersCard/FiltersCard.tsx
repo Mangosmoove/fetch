@@ -4,10 +4,13 @@ import * as React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {setSort, toggleSortDirection} from "../../redux/slices/filter.slice.ts";
 import {RootState} from "../../redux/store.ts";
+import {Chips} from "primereact/chips";
 
 interface FiltersCardProps {
     handleClick: () => void;
+    handleClearClick: () => void;
     selectedBreeds: string[];
+    zipCodes: string[];
     setSelectedBreeds: React.Dispatch<React.SetStateAction<string[]>>;
     setAgeMin: React.Dispatch<React.SetStateAction<string>>;
     setAgeMax: React.Dispatch<React.SetStateAction<string>>;
@@ -16,7 +19,9 @@ interface FiltersCardProps {
 
 export const FiltersCard = ({
                                 handleClick,
+                                handleClearClick,
                                 selectedBreeds,
+                                zipCodes,
                                 setSelectedBreeds,
                                 setAgeMin,
                                 setAgeMax,
@@ -25,6 +30,8 @@ export const FiltersCard = ({
     const dispatch = useDispatch();
     const sort = useSelector((state: RootState) => state.filter.sort)
     const sortDirection = useSelector((state: RootState) => state.filter.sortDirection)
+    const ageMin = useSelector((state: RootState) => state.filter.ageMin)
+    const ageMax = useSelector((state: RootState) => state.filter.ageMax)
 
     const handleSortClick = (sortBy: string) => {
         dispatch(setSort(sortBy))
@@ -48,6 +55,7 @@ export const FiltersCard = ({
                                 min={0}
                                 max={14}
                                 placeholder="Enter years"
+                                value={ageMin}
                                 onChange={(e) => setAgeMin(e.target.value)}
                             />
                         </Form.Group>
@@ -60,20 +68,18 @@ export const FiltersCard = ({
                                 min={0}
                                 max={14}
                                 placeholder="Enter years"
+                                value={ageMax}
                                 onChange={(e) => setAgeMax(e.target.value)}
                             />
                         </Form.Group>
                     </Form>
-                    <Form>
-                        <Form.Group>
-                            <Form.Label>Zip Code</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="Enter Zip Code"
-                                // onChange={(e) => setZipCodes(e.target.value)}
-                            />
-                        </Form.Group>
-                    </Form>
+                    <Chips
+                        className='p-fluid'
+                        value={zipCodes}
+                        onChange={(e) => setZipCodes(e.value || [])}
+                        keyfilter="int"
+                        placeholder="Enter zip codes"
+                    />
                 </Stack>
                 <h5 className='mt-3'>Sort By</h5>
                 <div>
@@ -111,6 +117,8 @@ export const FiltersCard = ({
                     </div>
                 </Form>
                 <Button onClick={handleClick} className={'w-100 mt-4'}>Search</Button>
+                <Button variant='outline-primary' className={'w-100 mt-3'} onClick={handleClearClick}>Clear
+                    Filters</Button>
             </Card.Body>
         </Card>
     )

@@ -22,9 +22,12 @@ export const favoritesSlice = createSlice({
                 // If the dogId is not in the list, add it
                 state.ids.push(dogId);
             }
-        }
+        },
+        resetFavorites: (state) => {
+            state.ids = [];
+        },
     }
 })
 
-export const {toggleFavorite} = favoritesSlice.actions;
+export const {toggleFavorite, resetFavorites} = favoritesSlice.actions;
 export default favoritesSlice.reducer;

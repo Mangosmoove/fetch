@@ -1,10 +1,11 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 import {Dog, LoginRequest, SearchQueryParams} from "../utils/type.ts";
 
+const base_url = import.meta.env.VITE_API_BASE_URL;
 //  zipCodes, ageMin, ageMax, size = 25, from, sort
 export const api = createApi({
     baseQuery: fetchBaseQuery({
-        baseUrl: "http://localhost:8000",
+        baseUrl: base_url,
         credentials: "include",
         prepareHeaders: (headers: Headers) => {
             headers.set("Content-Type", "application/json");

@@ -1,14 +1,17 @@
 import express from "express";
 import cors from "cors";
 import axios from "axios";
+import dotenv from "dotenv";
 
 const app = express();
+dotenv.config();
 const PORT = 8000;
 const API_BASE_URL = "https://frontend-take-home-service.fetch.com";
+const allowedOrigins = process.env.NODE_ENV === 'production' ? process.env.PROD_LINK : process.env.DEV_LINK;
 
 app.use(
     cors({
-        origin: "http://localhost:5173",
+        origin: allowedOrigins, // Use the environment-based origin
         credentials: true,
     })
 );

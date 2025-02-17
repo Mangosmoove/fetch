@@ -11,8 +11,14 @@ const allowedOrigins = process.env.NODE_ENV === 'production' ? process.env.PROD_
 
 app.use(
     cors({
-        origin: allowedOrigins, // Use the environment-based origin
-        credentials: true,
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true, // Allow cookies if needed
     })
 );
 app.use(express.json());
@@ -220,6 +226,8 @@ app.post("/api/dogs/match", async (req, res) => {
 })
 
 
-app.listen(PORT, () =>
-    console.log(`Proxy server running on http://localhost:${PORT}`)
+app.listen(PORT, () => {
+        console.log(`Allowed origins: ${allowedOrigins}`);
+        console.log(`Listening on port ${PORT}`);
+    }
 );

@@ -27,7 +27,7 @@ export const api = createApi({
         }),
         logoutUser: build.mutation({
             query: () => ({
-                url: "api/auth/logout",
+                url: "/api/auth/logout",
                 method: "POST",
             }),
         }),
@@ -64,7 +64,7 @@ export const api = createApi({
                     params.append("sort", sort);
                 }
                 return {
-                    url: `api/dogs/search?${params.toString()}`,
+                    url: `/api/dogs/search?${params.toString()}`,
                 };
             },
         }),
